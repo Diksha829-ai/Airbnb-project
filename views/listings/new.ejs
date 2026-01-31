@@ -1,100 +1,133 @@
-
 <% layout('layouts/boilerplate') -%>
 
 <div class="container mt-5">
   <div class="row justify-content-center mt-3">
     <div class="col-md-8">
-<br><br>
       <h3>Create a New Listing</h3>
 
-     <form
-  method="POST"
-  action="/listings"
-  novalidate
-  class="needs-validation"
-  enctype="multipart/form-data"
->
+      <form
+        method="POST"
+        action="/listings"
+        novalidate
+        class="needs-validation"
+        enctype="multipart/form-data"
+      >
+        <!-- Title -->
+        <div class="mb-3">
+          <label for="title" class="form-label">Title</label>
+          <input
+            name="listing[title]"
+            placeholder="Add a Catchy title"
+            type="text"
+            class="form-control"
+            id="title"
+            required
+          />
+          <div class="invalid-feedback">Title is required</div>
+        </div>
 
-  <div class="mb-3">
-    <label for="title" class="form-label">Title</label>
-    <input
-      name="listing[title]"
-      placeholder="Add a Catchy title"
-      type="text"
-      class="form-control"
-      id="title"
-      required
-    />
-    <div class="invalid-feedback">Title is required</div>
-  </div>
+        <!-- Description -->
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea
+            name="listing[description]"
+            class="form-control"
+            id="description"
+            required
+          ></textarea>
+          <div class="invalid-feedback">Please enter the description</div>
+        </div>
 
-  <div class="mb-3">
-    <label for="description" class="form-label">Description</label>
-    <textarea
-      name="listing[description]"
-      class="form-control"
-      id="description"
-      required></textarea>
-    <div class="invalid-feedback">Please enter the description</div>
-  </div>
+        <!-- Image -->
+        <div class="mb-3">
+          <label for="image" class="form-label">Upload Listing Image</label>
+          <input
+            type="file"
+            name="listing[image]"
+            class="form-control"
+            id="image"
+            required
+          />
+        </div>
 
-  <!-- ✅ FIXED HERE -->
-  <div class="mb-3">
-    <label for="image" class="form-label">Upload Listing Image</label>
-    <input
-      type="file"
-      name="listing[image]"
-      class="form-control"
-      id="image"
-      required
-    />
-  </div>
+        <!-- Price & Country -->
+        <div class="row">
+          <div class="mb-3 col-md-4">
+            <label for="price" class="form-label">Price</label>
+            <input
+              name="listing[price]"
+              placeholder="Enter price"
+              class="form-control"
+              id="price"
+              required
+            />
+            <div class="invalid-feedback">Please enter a valid price</div>
+          </div>
 
-  <div class="row">
-    <div class="mb-3 col-md-4">
-      <label for="price" class="form-label">Price</label>
-      <input
-        name="listing[price]"
-        placeholder="enter price"
-        class="form-control"
-        id="price"
-        required
-      />
-      <div class="invalid-feedback">Please enter a valid price</div>
-    </div>
+          <div class="mb-3 col-md-8">
+            <label for="country" class="form-label">Country</label>
+            <input
+              name="listing[country]"
+              placeholder="Enter country"
+              type="text"
+              class="form-control"
+              id="country"
+              required
+            />
+            <div class="invalid-feedback">Please enter the country name</div>
+          </div>
+        </div>
 
-    <div class="mb-3 col-md-8">
-      <label for="country" class="form-label">Country</label>
-      <input
-        name="listing[country]"
-        placeholder="enter country"
-        type="text"
-        class="form-control"
-        id="country"
-        required
-      />
-      <div class="invalid-feedback">Please enter the country name</div>
-    </div>
-  </div>
+        <!-- Location -->
+        <div class="mb-3">
+          <label for="location" class="form-label">Location (City / Area)</label>
+          <input
+            name="listing[location]"
+            placeholder="Enter location"
+            type="text"
+            class="form-control"
+            id="location"
+            required
+          />
+          <div class="invalid-feedback">Please enter the location</div>
+        </div>
 
-  <div class="mb-3">
-    <label for="location" class="form-label">Location</label>
-    <input
-      name="listing[location]"
-      placeholder="enter location"
-      type="text"
-      class="form-control"
-      id="location"
-      required
-    />
-    <div class="invalid-feedback">Please enter the location</div>
-  </div>
+        <!-- ✅ Hidden top-level coordinates -->
+        <input type="hidden" name="lat" id="lat" value="20">
+        <input type="hidden" name="lng" id="lng" value="77">
 
-  <button class="btn btn-dark add-btn mt-3">Add</button>
-  <br><br>
-</form>
+        <button class="btn btn-dark add-btn mt-3">Add Listing</button>
+      </form>
 
-
+      <!-- Map container -->
+      <div id="map" style="height: 400px; width: 100%; margin-top: 20px;"></div>
     </div>
   </div>
 </div>
+
+<script>
+  const latInput = document.getElementById('lat');
+  const lngInput = document.getElementById('lng');
+
+  let map = L.map('map').setView([latInput.value, lngInput.value], 5);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  let marker = L.marker([latInput.value, lngInput.value], { draggable: true }).addTo(map);
+
+  // Update hidden inputs when marker moves
+  marker.on('dragend', function(e) {
+    const pos = e.target.getLatLng();
+    latInput.value = pos.lat;
+    lngInput.value = pos.lng;
+  });
+
+  map.on('click', function(e) {
+    const { lat, lng } = e.latlng;
+    marker.setLatLng([lat, lng]);
+    latInput.value = lat;
+    lngInput.value = lng;
+  });
+</script>

@@ -1,10 +1,13 @@
 <style>
-  .search-btn{
-    background-color: #fe424d;
-    color: #ffffff;
-    border-radius: 25px;
-    padding: 0 1rem 0 1rem;
-  }
+  .search-btn {
+  background-color: #fe424d;
+  color: #ffffff;
+  border-radius: 25px;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center; /* Vertically center icon and text */
+  gap: 0.5rem; /* spacing between icon and text */
+}
 
    .search-btn:hover{
     background-color: #fe424d;
@@ -43,18 +46,18 @@
 
 
 <div class="d-flex align-items-center justify-content-center flex-grow-1">
-  <form class="d-flex" role="search">
+  <form class="d-flex align-items-center" role="search">
     <input
       class="form-control me-2 search-inp"
       type="search"
       placeholder="Search destinations"
-      
     >
-    <button class="btn search-btn" type="submit">
-      <i class="fa-solid fa-magnifying-glass"></i> Search
+    <button class="btn search-btn d-flex align-items-center" type="submit">
+      <i class="fa-solid fa-magnifying-glass me-2"></i> Search
     </button>
   </form>
 </div>
+
 
 
 

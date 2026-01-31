@@ -1,4 +1,5 @@
-const Joi = require("joi");
+// schema.js
+const Joi = require("joi"); // ⚠️ Make sure you have this
 
 module.exports.listingSchema = Joi.object({
   listing: Joi.object({
@@ -7,16 +8,16 @@ module.exports.listingSchema = Joi.object({
     location: Joi.string().required(),
     description: Joi.string().required(),
     country: Joi.string().required(),
-
-    // ✅ IMAGE MUST BE OPTIONAL (VERY IMPORTANT)
-    image: Joi.any().optional(),
-
-  }).required()
+    image: Joi.any().optional(), // optional
+  }).required(),
+  lat: Joi.number().required(),
+  lng: Joi.number().required(),
 });
+
 
 module.exports.reviewSchema = Joi.object({
   review: Joi.object({
     rating: Joi.number().required().min(1).max(5),
     comment: Joi.string().required(),
-  }).required(),
+  }).required()
 });
