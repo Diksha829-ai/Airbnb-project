@@ -1,3 +1,5 @@
+
+
 const Listing=require("../models/listing.js");
 
 
@@ -11,20 +13,40 @@ module.exports.renderNewForm=(req, res) => {
   res.render("listings/new.ejs");
 };
 
-module.exports.showListing=(async (req, res,next) => {
-  let { id } = req.params;
+module.exports.showListing = async (req, res) => {
+  const { id } = req.params;
+
   const listing = await Listing.findById(id)
-  .populate({path:"reviews",populate:{path:"author"},
-  })
-  .populate("owner");
-  if(!listing){
-    req.flash("error","Listing you requested for does not exists !");
+    .populate({ path: "reviews", populate: { path: "author" } })
+    .populate("owner");
+
+  if (!listing) {
+    req.flash("error", "Listing not found");
     return res.redirect("/listings");
   }
-  console.log(listing)
-  res.render("listings/show.ejs", { listing });
-  
-});
+
+  // ✅ SAFE MAP DATA
+  let hasGeometry = false;
+  let lat = 20; // default India
+  let lng = 77;
+
+  if (
+    listing.geometry &&
+    listing.geometry.coordinates &&
+    listing.geometry.coordinates.length === 2
+  ) {
+    lng = listing.geometry.coordinates[0];
+    lat = listing.geometry.coordinates[1];
+    hasGeometry = true;
+  }
+
+  res.render("listings/show.ejs", {
+    listing,
+    hasGeometry,
+    lat,
+    lng,
+  });
+};
 
 
 module.exports.createListing = async (req, res, next) => {
@@ -98,4 +120,3 @@ module.exports.destroyListing=(async (req, res) => {
 
   res.redirect("/listings");
 });
-

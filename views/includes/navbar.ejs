@@ -1,79 +1,74 @@
-<style>
-  .search-btn {
-  background-color: #fe424d;
-  color: #ffffff;
-  border-radius: 25px;
-  padding: 0.5rem 1rem;
-  display: flex;
-  align-items: center; /* Vertically center icon and text */
-  gap: 0.5rem; /* spacing between icon and text */
-}
-
-   .search-btn:hover{
-    background-color: #fe424d;
-    color: #ffffff;
-  }
-
-  .search-btn i{
-    display: inline;
-    margin-right: 0.5rem;
-  }
-
-  .search-inp{
-    border-radius: 25px;
-    padding: 0.5rem 3rem 0.5rem 3rem;
-    font-size: 1rem;
-  }
-
-</style>
-
-<nav class="navbar navbar-expand-md bg-body light border-bottom sticky-top">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
-  <a class="navbar-brand" href="/listings"><i class="fa-solid fa-compass"></i></a>
-  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-  <span class="navbar-toggler-icon"></span>
-</button>
+
+    <!-- Logo -->
+    <a class="navbar-brand text-white fw-bold d-flex align-items-center gap-2" href="/listings">
+      <i class="fa-solid fa-compass"></i>
+      <span>Explore</span>
+    </a>
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
+      <ul class="navbar-nav ms-auto">
+
+        <!-- Explore -->
         <li class="nav-item">
-          <a class="nav-link" href="/listings">Explore</a>
+          <a
+            class="nav-link text-white <%= (path === '/' || path.startsWith('/listings')) ? 'active fw-bold' : '' %>"
+            href="/listings"
+          >
+            Home
+          </a>
         </li>
-        <li class="nav-item">
-        </li>
+
+        <!-- Logged in user -->
+        <% if (currUser) { %>
+          <li class="nav-item">
+            <a
+              class="nav-link text-white <%= path.startsWith('/bookings') ? 'active fw-bold' : '' %>"
+              href="/bookings"
+            >
+              My Booked Places
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link text-white" href="/logout">
+              Logout
+            </a>
+          </li>
+        <% } %>
+
+        <!-- Guest -->
+        <% if (!currUser) { %>
+          <li class="nav-item">
+            <a
+              class="nav-link text-white <%= path === '/login' ? 'active fw-bold' : '' %>"
+              href="/login"
+            >
+              Login
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a
+              class="nav-link text-white <%= path === '/signup' ? 'active fw-bold' : '' %>"
+              href="/signup"
+            >
+              Signup
+            </a>
+          </li>
+        <% } %>
+
       </ul>
     </div>
-
-
-<div class="d-flex align-items-center justify-content-center flex-grow-1">
-  <form class="d-flex align-items-center" role="search">
-    <input
-      class="form-control me-2 search-inp"
-      type="search"
-      placeholder="Search destinations"
-    >
-    <button class="btn search-btn d-flex align-items-center" type="submit">
-      <i class="fa-solid fa-magnifying-glass me-2"></i> Search
-    </button>
-  </form>
-</div>
-
-
-
-
-    <div class="navbar-nav ms-auto">
-       <li class="nav-item">
-          <a class="nav-link" href="/listings/new">Airbnb your home</a>
-        </li>
-      <% if(!currUser){ %>
-        <a class="nav-link" href="/signup"><b>Sign Up</b></a>
-      <a class="nav-link" href="/login"><b>Log in</b></a>
-       <% } %>
-      <% if(currUser){ %>
-      <a class="nav-link" href="/logout">Log Out</a>
-    </div>
-    <% } %>
-
-
   </div>
 </nav>

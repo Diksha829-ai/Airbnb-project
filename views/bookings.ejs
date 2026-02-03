@@ -1,0 +1,39 @@
+<% layout('layouts/boilerplate') -%>
+
+<div class="container mt-3">
+  <h3>My Booked Places</h3>
+  <hr>
+
+  <% if (bookings.length === 0) { %>
+    <p>You haven't booked any places yet.</p>
+  <% } else { %>
+    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 g-4">
+      <% for (let booking of bookings) { %>
+        <div class="col mb-3">
+          <div class="card listing-card h-100 shadow-sm">
+            <img src="<%= booking.listing.image.url %>" class="card-img-top" style="height: 15rem; object-fit: cover;" alt="listing_image">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title"><%= booking.listing.title %></h5>
+              <p class="card-text mb-3">
+                <strong>Check-in:</strong> <%= new Date(booking.checkin).toDateString() %><br>
+                <strong>Check-out:</strong> <%= new Date(booking.checkout).toDateString() %><br>
+                <strong>Total:</strong> ₹ <%= booking.totalPrice.toLocaleString("en-IN") %>
+              </p>
+
+              <!-- Buttons side by side -->
+              <div class="mt-auto d-flex gap-2">
+                <a href="/listings/<%= booking.listing._id %>" class="btn btn-primary btn-sm flex-fill">View Listing</a>
+
+                <form action="/bookings/<%= booking._id %>?_method=DELETE" method="POST" class="flex-fill">
+                  <button type="submit" class="btn btn-danger btn-sm w-100" onclick="return confirm('Are you sure you want to cancel this booking?');">
+                    Cancel Booking
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  <% } %>
+</div>

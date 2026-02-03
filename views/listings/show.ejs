@@ -11,12 +11,10 @@
       class="card-img-top show-img"
       alt="listing_image"
     />
-
     <div class="card-body">
       <p class="card-text">
-        <i> owned by <%= listing.owner ? listing.owner.username : "Unknown Owner" %></i>
+        <i>Owned by <%= listing.owner ? listing.owner.username : "Unknown Owner" %></i>
       </p>
-
       <p class="card-text"><%= listing.description %></p>
       <p class="card-text">&#8377; <%= listing.price.toLocaleString("en-IN") %></p>
       <p class="card-text"><%= listing.location %></p>
@@ -28,10 +26,54 @@
 <br>
 
 <% if (currUser && listing.owner && listing.owner._id.equals(currUser._id)) { %>
+  <!-- Edit/Delete buttons for owner -->
   <div class="btns">
     <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark col-1 offset-3 edit-btn">Edit</a>
     <form method="post" action="/listings/<%= listing._id %>?_method=DELETE">
       <button class="btn btn-dark offset-5">Delete</button>
+    </form>
+  </div>
+<% } %>
+
+<!-- BOOK NOW BUTTON & FORM -->
+<% if (currUser && (!listing.owner || !listing.owner._id.equals(currUser._id))) { %>
+  <div class="col-8 offset-3 mb-3">
+    <button id="bookNowBtn" class="btn btn-primary">Book Now</button>
+  </div>
+
+  <div id="bookingFormContainer" class="col-8 offset-3 mb-3" style="display:none;" data-price="<%= listing.price %>">
+    <form id="bookingForm" action="/bookings" method="POST" class="needs-validation" novalidate>
+      <input type="hidden" name="listingId" value="<%= listing._id %>">
+
+      <div class="mb-3">
+        <label for="name" class="form-label">Your Name</label>
+        <input type="text" name="name" class="form-control" required>
+        <div class="invalid-feedback">Please enter your name.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" required>
+        <div class="invalid-feedback">Please enter a valid email.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="checkin" class="form-label">Check-in Date</label>
+        <input type="date" id="checkin" name="checkin" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="checkout" class="form-label">Check-out Date</label>
+        <input type="date" id="checkout" name="checkout" class="form-control" required>
+      </div>
+
+      <!-- Total Price -->
+      <div class="mb-3">
+        <label class="form-label">Total Price</label>
+        <input type="text" id="totalPrice" class="form-control" value="₹ 0" readonly>
+      </div>
+
+      <button type="submit" class="btn btn-success">Confirm Booking</button>
     </form>
   </div>
 <% } %>
@@ -54,7 +96,6 @@
         </fieldset>
       </div>
 
-      <!-- COMMENT -->
       <div class="mb-3 mt-3">
         <label for="comment" class="form-label">Comment</label>
         <textarea name="review[comment]" id="comment" cols="30" rows="5" class="form-control" required></textarea>
@@ -95,14 +136,47 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
 <script>
-  // Pass coordinates safely from EJS to JS
-  // Safe coordinates from EJS
+  // BOOK NOW FORM TOGGLE
+  const bookBtn = document.getElementById('bookNowBtn');
+  const bookingForm = document.getElementById('bookingFormContainer');
+
+  if (bookBtn) {
+    bookBtn.addEventListener('click', () => {
+      bookingForm.style.display = bookingForm.style.display === 'none' ? 'block' : 'none';
+      bookBtn.textContent = bookingForm.style.display === 'block' ? 'Hide Booking Form' : 'Book Now';
+    });
+  }
+
+  // TOTAL PRICE CALCULATION (client-side display only)
+  const pricePerNight = bookingForm ? parseFloat(bookingForm.dataset.price) : 0;
+  const checkinInput = document.getElementById('checkin');
+  const checkoutInput = document.getElementById('checkout');
+  const totalPriceInput = document.getElementById('totalPrice');
+
+  function calculateTotal() {
+    if (!checkinInput || !checkoutInput || !totalPriceInput) return;
+
+    const checkin = new Date(checkinInput.value);
+    const checkout = new Date(checkoutInput.value);
+
+    if (checkin && checkout && checkout > checkin) {
+      const nights = Math.ceil((checkout - checkin) / (1000 * 60 * 60 * 24));
+      const total = nights * pricePerNight;
+      totalPriceInput.value = `₹ ${total.toLocaleString("en-IN")}`;
+    } else {
+      totalPriceInput.value = '₹ 0';
+    }
+  }
+
+  if (checkinInput) checkinInput.addEventListener('change', calculateTotal);
+  if (checkoutInput) checkoutInput.addEventListener('change', calculateTotal);
+
+  // MAP (Leaflet)
   const coords = (typeof listing !== "undefined" && listing.geometry && listing.geometry.coordinates && listing.geometry.coordinates.length === 2)
     ? { lat: listing.geometry.coordinates[1], lng: listing.geometry.coordinates[0] }
-    : { lat: 20, lng: 77 }; // default
+    : { lat: 20, lng: 77 };
 
   const map = L.map('map').setView([coords.lat, coords.lng], 13);
-
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);

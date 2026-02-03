@@ -119,3 +119,56 @@ body{
     padding-left: 0;
     padding-right: 0;
 }
+
+/* Force navbar text to white */
+.navbar a,
+.navbar .nav-link,
+.navbar-brand {
+  color: #ffffff !important;
+}
+
+/* Hover effect */
+.navbar a:hover {
+  color: #dddddd !important;
+}
+
+.navbar .nav-link {
+  transition: all 0.3s ease;
+}
+
+.navbar .nav-link:hover {
+  color: #f8f9fa;
+  text-decoration: underline;
+}
+
+.navbar .nav-link.active {
+  border-bottom: 2px solid white;
+}
+
+
+/* Mobile menu */
+.navbar-toggler {
+  border-color: white;
+}
+
+.navbar-toggler-icon {
+  filter: invert(1);
+}
+
+/* Leaflet map fix */
+#map {
+  height: 350px;
+  width: 100%;
+  z-index: 1;
+}
+
+.leaflet-container {
+  background: #fff !important;
+}
+
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+  z-index: 2 !important;
+}
