@@ -8,7 +8,6 @@ const { isLoggedIn } = require("../middleware");
 router.post("/", isLoggedIn, async (req, res) => {
   try {
     const { listingId, name, email, checkin, checkout } = req.body;
-
     if (!listingId || !name || !email || !checkin || !checkout) {
       req.flash("error", "Please fill all booking details");
       return res.redirect(`/listings/${listingId}`);
@@ -20,17 +19,14 @@ router.post("/", isLoggedIn, async (req, res) => {
       return res.redirect("/listings");
     }
 
-    // Convert strings to Date objects
     const checkinDate = new Date(checkin);
     const checkoutDate = new Date(checkout);
     const nights = Math.ceil((checkoutDate - checkinDate) / (1000 * 60 * 60 * 24));
-
     if (nights <= 0) {
-      req.flash("error", "Check-out date must be after check-in date");
+      req.flash("error", "Check-out must be after check-in");
       return res.redirect(`/listings/${listingId}`);
     }
 
-    // Calculate total price on server
     const totalPrice = nights * listing.price;
 
     const booking = new Booking({
@@ -44,49 +40,48 @@ router.post("/", isLoggedIn, async (req, res) => {
     });
 
     await booking.save();
-
     req.flash("success", "Booking confirmed!");
     res.redirect("/bookings");
-
   } catch (err) {
-    console.log(err); // Log real error
-    req.flash("error", "Failed to book. Try again.");
+    console.log(err);
+    req.flash("error", "Booking failed. Try again.");
     res.redirect(`/listings/${req.body.listingId}`);
   }
 });
 
-// SHOW MY BOOKINGS
+// SHOW BOOKINGS
 router.get("/", isLoggedIn, async (req, res) => {
-  const bookings = await Booking.find({ user: req.user._id }).populate("listing");
-  res.render("bookings", { bookings });
+  const { q } = req.query;
+  let bookings;
+
+  if (q) {
+    bookings = await Booking.find({ user: req.user._id }).populate({
+      path: "listing",
+      match: { title: { $regex: q, $options: "i" } },
+    });
+    bookings = bookings.filter(b => b.listing !== null);
+  } else {
+    bookings = await Booking.find({ user: req.user._id }).populate("listing");
+  }
+
+  res.render("bookings", { bookings, query: q });
 });
 
-// DELETE A BOOKING
+// DELETE BOOKING
 router.delete("/:id", isLoggedIn, async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    // Find the booking
-    const booking = await Booking.findById(id);
-    if (!booking) {
-      req.flash("error", "Booking not found");
-      return res.redirect("/bookings");
-    }
-
-    // Only allow the user who created the booking to delete it
-    if (!booking.user.equals(req.user._id)) {
-      req.flash("error", "You do not have permission to delete this booking");
-      return res.redirect("/bookings");
-    }
-
-    await Booking.findByIdAndDelete(id);
-    req.flash("success", "Booking canceled successfully");
-    res.redirect("/bookings");
-  } catch (err) {
-    console.log(err);
-    req.flash("error", "Failed to cancel booking");
-    res.redirect("/bookings");
+  const { id } = req.params;
+  const booking = await Booking.findById(id);
+  if (!booking) {
+    req.flash("error", "Booking not found");
+    return res.redirect("/bookings");
   }
+  if (!booking.user.equals(req.user._id)) {
+    req.flash("error", "Permission denied");
+    return res.redirect("/bookings");
+  }
+  await Booking.findByIdAndDelete(id);
+  req.flash("success", "Booking canceled");
+  res.redirect("/bookings");
 });
 
 module.exports = router;

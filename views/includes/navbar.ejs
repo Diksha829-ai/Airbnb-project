@@ -7,68 +7,96 @@
       <span>Explore</span>
     </a>
 
+    <!-- Navbar Toggler (mobile) -->
     <button
       class="navbar-toggler"
       type="button"
       data-bs-toggle="collapse"
       data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
     >
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
 
-        <!-- Explore -->
-        <li class="nav-item">
-          <a
-            class="nav-link text-white <%= (path === '/' || path.startsWith('/listings')) ? 'active fw-bold' : '' %>"
-            href="/listings"
-          >
-            Home
-          </a>
-        </li>
-
-        <!-- Logged in user -->
-        <% if (currUser) { %>
-          <li class="nav-item">
-            <a
-              class="nav-link text-white <%= path.startsWith('/bookings') ? 'active fw-bold' : '' %>"
-              href="/bookings"
-            >
-              My Booked Places
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link text-white" href="/logout">
-              Logout
-            </a>
-          </li>
-        <% } %>
-
-        <!-- Guest -->
-        <% if (!currUser) { %>
-          <li class="nav-item">
-            <a
-              class="nav-link text-white <%= path === '/login' ? 'active fw-bold' : '' %>"
-              href="/login"
-            >
-              Login
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a
-              class="nav-link text-white <%= path === '/signup' ? 'active fw-bold' : '' %>"
-              href="/signup"
-            >
-              Signup
-            </a>
-          </li>
-        <% } %>
-
+      <!-- Left side nav items (optional) -->
+      <ul class="navbar-nav me-auto">
+        <!-- Add links here if needed -->
       </ul>
+
+      <!-- Right side nav items + search -->
+      <div class="d-flex align-items-center">
+
+        <!-- SEARCH BAR (only on /bookings page) -->
+        <% if (currUser && path.startsWith('/bookings')) { %>
+          <form class="d-flex me-3" action="/bookings" method="GET">
+            <input 
+              class="form-control me-2" 
+              type="search" 
+              placeholder="Search your bookings..." 
+              aria-label="Search"
+              name="q"
+              value="<%= typeof query !== 'undefined' ? query : '' %>"
+            >
+            <button class="btn btn-outline-light" type="submit">Search</button>
+          </form>
+        <% } %>
+
+        <!-- Nav links -->
+        <ul class="navbar-nav">
+
+          <!-- Home -->
+          <li class="nav-item">
+            <a
+              class="nav-link text-white <%= (path === '/' || path.startsWith('/listings')) ? 'active fw-bold' : '' %>"
+              href="/listings"
+            >
+              Home
+            </a>
+          </li>
+
+          <!-- Logged-in user links -->
+          <% if (currUser) { %>
+            <li class="nav-item">
+              <a
+                class="nav-link text-white <%= path.startsWith('/bookings') ? 'active fw-bold' : '' %>"
+                href="/bookings"
+              >
+                My Booked Places
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link text-white" href="/logout">Logout</a>
+            </li>
+          <% } %>
+
+          <!-- Guest links -->
+          <% if (!currUser) { %>
+            <li class="nav-item">
+              <a
+                class="nav-link text-white <%= path === '/login' ? 'active fw-bold' : '' %>"
+                href="/login"
+              >
+                Login
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a
+                class="nav-link text-white <%= path === '/signup' ? 'active fw-bold' : '' %>"
+                href="/signup"
+              >
+                Signup
+              </a>
+            </li>
+          <% } %>
+
+        </ul>
+      </div>
     </div>
   </div>
 </nav>

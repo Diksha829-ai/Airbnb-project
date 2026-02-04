@@ -42,39 +42,34 @@
   </div>
 
   <div id="bookingFormContainer" class="col-8 offset-3 mb-3" style="display:none;" data-price="<%= listing.price %>">
+     
     <form id="bookingForm" action="/bookings" method="POST" class="needs-validation" novalidate>
-      <input type="hidden" name="listingId" value="<%= listing._id %>">
+  <input type="hidden" name="listingId" value="<%= listing._id %>">
 
-      <div class="mb-3">
-        <label for="name" class="form-label">Your Name</label>
-        <input type="text" name="name" class="form-control" required>
-        <div class="invalid-feedback">Please enter your name.</div>
-      </div>
+  <div class="mb-3">
+    <label for="name">Your Name</label>
+    <input type="text" name="name" class="form-control" required>
+  </div>
 
-      <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input type="email" name="email" class="form-control" required>
-        <div class="invalid-feedback">Please enter a valid email.</div>
-      </div>
+  <div class="mb-3">
+    <label for="email">Email</label>
+    <input type="email" name="email" class="form-control" required>
+  </div>
 
-      <div class="mb-3">
-        <label for="checkin" class="form-label">Check-in Date</label>
-        <input type="date" id="checkin" name="checkin" class="form-control" required>
-      </div>
+  <div class="mb-3">
+    <label for="checkin">Check-in</label>
+    <input type="date" name="checkin" class="form-control" required>
+  </div>
 
-      <div class="mb-3">
-        <label for="checkout" class="form-label">Check-out Date</label>
-        <input type="date" id="checkout" name="checkout" class="form-control" required>
-      </div>
+  <div class="mb-3">
+    <label for="checkout">Check-out</label>
+    <input type="date" name="checkout" class="form-control" required>
+  </div>
 
-      <!-- Total Price -->
-      <div class="mb-3">
-        <label class="form-label">Total Price</label>
-        <input type="text" id="totalPrice" class="form-control" value="₹ 0" readonly>
-      </div>
+  <button type="submit" class="btn btn-success">Confirm Booking</button>
+</form>
 
-      <button type="submit" class="btn btn-success">Confirm Booking</button>
-    </form>
+
   </div>
 <% } %>
 
