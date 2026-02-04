@@ -21,13 +21,8 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto"></ul>
 
-      <!-- Left side nav items (optional) -->
-      <ul class="navbar-nav me-auto">
-        <!-- Add links here if needed -->
-      </ul>
-
-      <!-- Right side nav items + search -->
       <div class="d-flex align-items-center">
 
         <!-- SEARCH BAR (only on /bookings page) -->
@@ -44,6 +39,12 @@
             <button class="btn btn-outline-light" type="submit">Search</button>
           </form>
         <% } %>
+
+        <!-- Add New Listing Button (visible to everyone) -->
+<a href="/listings/new" class="btn btn-outline-light me-3">
+  Add New Listing
+</a>
+
 
         <!-- Nav links -->
         <ul class="navbar-nav">
@@ -100,3 +101,82 @@
     </div>
   </div>
 </nav>
+
+<!-- HIDDEN NEW LISTING FORM (insert at the bottom of body) -->
+<div id="newListingFormNav" class="container mt-3" style="display:none;">
+  <% if (currUser) { %>
+    <div class="card p-4">
+      <h4>Create New Listing</h4>
+      <form
+        method="POST"
+        action="/listings"
+        enctype="multipart/form-data"
+        class="needs-validation"
+        novalidate
+      >
+        <div class="mb-3">
+          <label class="form-label">Title</label>
+          <input type="text" name="listing[title]" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Description</label>
+          <textarea name="listing[description]" class="form-control" required></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Image</label>
+          <input type="file" name="listing[image]" class="form-control" required>
+        </div>
+
+        <div class="row">
+          <div class="mb-3 col-md-4">
+            <label class="form-label">Price</label>
+            <input type="number" name="listing[price]" class="form-control" required>
+          </div>
+
+          <div class="mb-3 col-md-8">
+            <label class="form-label">Country</label>
+            <input type="text" name="listing[country]" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Location (City / Area)</label>
+          <input type="text" name="listing[location]" class="form-control" required>
+        </div>
+
+        <input type="hidden" name="lat" value="20">
+        <input type="hidden" name="lng" value="77">
+
+        <button class="btn btn-success">Add Listing</button>
+      </form>
+    </div>
+  <% } else { %>
+    <div class="alert alert-warning">
+      You must <a href="/login">login</a> to create a new listing.
+    </div>
+  <% } %>
+</div>
+
+<script>
+  // Toggle New Listing Form from Navbar
+  const navBtn = document.getElementById("addListingNavBtn");
+  const navForm = document.getElementById("newListingFormNav");
+
+  if (navBtn) {
+    navBtn.addEventListener("click", () => {
+      if (navForm.style.display === "none") {
+        navForm.style.display = "block";
+        navBtn.textContent = "Hide Form";
+      } else {
+        navForm.style.display = "none";
+        navBtn.textContent = "Add New Listing";
+      }
+      // Scroll to form when opening
+      if (navForm.style.display === "block") {
+        navForm.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+  }
+</script>

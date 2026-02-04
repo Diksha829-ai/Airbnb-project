@@ -3,11 +3,11 @@
 <div class="container mt-5">
   <div class="row justify-content-center mt-3">
     <div class="col-md-8">
-      <h3>Create a New Listing</h3>
+      <h3><%= typeof listing !== 'undefined' && listing ? 'Edit Listing' : 'Create a New Listing' %></h3>
 
       <form
         method="POST"
-        action="/listings"
+        action="<%= typeof listing !== 'undefined' && listing ? '/listings/' + listing._id + '?_method=PUT' : '/listings' %>"
         novalidate
         class="needs-validation"
         enctype="multipart/form-data"
@@ -21,6 +21,7 @@
             type="text"
             class="form-control"
             id="title"
+            value="<%= typeof listing !== 'undefined' && listing ? listing.title : '' %>"
             required
           />
           <div class="invalid-feedback">Title is required</div>
@@ -34,19 +35,26 @@
             class="form-control"
             id="description"
             required
-          ></textarea>
+          ><%= typeof listing !== 'undefined' && listing ? listing.description : '' %></textarea>
           <div class="invalid-feedback">Please enter the description</div>
         </div>
 
         <!-- Image -->
         <div class="mb-3">
           <label for="image" class="form-label">Upload Listing Image</label>
+
+          <% if (typeof listing !== 'undefined' && listing && listing.image) { %>
+            <div class="mb-2">
+              <img src="<%= listing.image.url %>" alt="Old Image" style="max-height: 200px; object-fit: cover;">
+            </div>
+          <% } %>
+
           <input
             type="file"
             name="listing[image]"
             class="form-control"
             id="image"
-            required
+            <%= typeof listing === 'undefined' || !listing ? 'required' : '' %>
           />
         </div>
 
@@ -59,6 +67,7 @@
               placeholder="Enter price"
               class="form-control"
               id="price"
+              value="<%= typeof listing !== 'undefined' && listing ? listing.price : '' %>"
               required
             />
             <div class="invalid-feedback">Please enter a valid price</div>
@@ -72,6 +81,7 @@
               type="text"
               class="form-control"
               id="country"
+              value="<%= typeof listing !== 'undefined' && listing ? listing.country : '' %>"
               required
             />
             <div class="invalid-feedback">Please enter the country name</div>
@@ -87,16 +97,17 @@
             type="text"
             class="form-control"
             id="location"
+            value="<%= typeof listing !== 'undefined' && listing ? listing.location : '' %>"
             required
           />
           <div class="invalid-feedback">Please enter the location</div>
         </div>
 
-        <!-- ✅ Hidden top-level coordinates -->
-        <input type="hidden" name="lat" id="lat" value="20">
-        <input type="hidden" name="lng" id="lng" value="77">
+        <!-- Hidden coordinates -->
+        <input type="hidden" name="lat" id="lat" value="<%= typeof listing !== 'undefined' && listing ? listing.geometry.coordinates[1] : 20 %>">
+        <input type="hidden" name="lng" id="lng" value="<%= typeof listing !== 'undefined' && listing ? listing.geometry.coordinates[0] : 77 %>">
 
-        <button class="btn btn-dark add-btn mt-3">Add Listing</button>
+        <button class="btn btn-dark add-btn mt-3"><%= typeof listing !== 'undefined' && listing ? 'Update Listing' : 'Add Listing' %></button>
       </form>
 
       <!-- Map container -->
@@ -105,19 +116,24 @@
   </div>
 </div>
 
+<!-- LEAFLET MAP -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script>
   const latInput = document.getElementById('lat');
   const lngInput = document.getElementById('lng');
 
+  // Initial map coordinates
   let map = L.map('map').setView([latInput.value, lngInput.value], 5);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
 
+  // Draggable marker
   let marker = L.marker([latInput.value, lngInput.value], { draggable: true }).addTo(map);
 
-  // Update hidden inputs when marker moves
   marker.on('dragend', function(e) {
     const pos = e.target.getLatLng();
     latInput.value = pos.lat;

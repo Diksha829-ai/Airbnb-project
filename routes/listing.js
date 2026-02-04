@@ -11,9 +11,7 @@ const { storage } = require("../cloudConfig.js");
 
 const upload = multer({
   storage,
-  limits: {
-    fileSize: 20 * 1024 * 1024, // 20 MB
-  },
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20 MB
 });
 
 // INDEX + CREATE

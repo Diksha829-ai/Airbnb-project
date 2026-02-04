@@ -49,6 +49,7 @@ module.exports.showListing = async (req, res) => {
 };
 
 
+
 module.exports.createListing = async (req, res, next) => {
   const { lat, lng } = req.body; // ✅ only here, inside the function
 
